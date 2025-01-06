@@ -1,20 +1,18 @@
 # Control Spotify with Hand Gestures
 
-# **Overview**
-
 The goal of this project was to develop a gesture-based system for media control using a laptop camera, leveraging computer vision to translate hand movements into commands like play/pause, skip, rewind, and volume adjustments. This system utilized the MediaPipe library for real-time hand tracking and AppleScript for controlling Spotify, ultimately achieving the intended functionality, although with compromises.
 
 ## **Implementation Details**
 
 The project began with setting up the webcam feed using OpenCV and integrating MediaPipe for hand tracking. MediaPipe provided a set of 21 hand landmarks representing key points on the hand, including the wrist, joints, and fingertips. These landmarks, identified by specific indices, were critical to developing gesture recognition logic.
 
-https://lh7-rt.googleusercontent.com/docsz/AD_4nXclmCX4CXBijZuoULlZw7YCKPTbrpfXbPwx-GIIoxEqdtAwJYBaOQarCySUaWPYvDkwP3zuV1S3F2C0sxrCvJqYGG8OqcmkFo49xRW1dWgqWaLvj9DZkBtdFdyUa6n553uV82B4qQ?key=hNQASpI_PLOQ7nTy6e7mk5D0
+<img src="images/handLandmarks.png">
 
 ## **Initial Gesture Recognition**
 
 The first step was to determine when fingers were raised. I identified a pattern using the distances between specific landmarks. For instance, a finger was considered raised if the distance between its base joint (e.g., landmark 5 for the index finger) and its fingertip (e.g., landmark 8 for the index finger) was greater than half the distance between the wrist (landmark 0) and the base joint of the middle finger (landmark 9). This adaptive threshold ensured accuracy across different hand sizes and varying distances from the camera.
 
-https://lh7-rt.googleusercontent.com/docsz/AD_4nXfMGSpiJS0RPmIpdDKMwUSlovu2gcJM-hDn3jwMH2-henXDMmm6jE-kR9DIemgOQ22xjNJYZI3jB2RytrO3gBKKTXZ2p_dVqN6Z1pxMOKk8XK5GN1jppBiakAC6u0b1AdDzcdUJ?key=hNQASpI_PLOQ7nTy6e7mk5D0
+<img src="images/figure1.png">
 
 This process required significant trial and error. Initially, I tested fixed pixel thresholds, but they failed when the hand moved closer or farther from the camera. By anchoring the threshold to relative hand proportions, I achieved consistent results across various scenarios. Testing involved waving my hand at different angles, distances, and positions in the camera’s field of view to fine-tune the logic.
 
@@ -22,7 +20,7 @@ This process required significant trial and error. Initially, I tested fixed pix
 
 For volume adjustment, I implemented a pinch gesture based on the distance between the thumb tip (landmark 4) and the index finger tip (landmark 8). The challenge here was to map this distance to a percentage value for volume, regardless of hand size or camera position. Through experimentation, I found that using the sum of distances between the wrist (landmark 0) to the thumb base (landmark 5) and from the thumb base (landmark 5) to the thumb joint (landmark 6) provided a reliable reference scale. The ratio of the pinch distance to this reference scale produced a percentage value that intuitively represented volume levels.
 
-https://lh7-rt.googleusercontent.com/docsz/AD_4nXeKKjAaxdDveGIe6hXggLd7cwOi_uWgxiZ2u-EV-4wY4ETcwFPgvODbr3gDtvdk-c5ZyO88n12nccEy6zCu8c79yZjyorF0BD7PXArwilA2Gh10R9OaejiyKXwg7d-ae-GtGDm-ow?key=hNQASpI_PLOQ7nTy6e7mk5D0
+<img src="images/figure2.png">
 
 Several alternatives were tested, such as using the distance from the wrist (landmark 0) to the base of the middle finger (landmark 9) similar to the raised finger technique as the reference, but these proved less intuitive during testing and would either mute or max out the volume to early. Ultimately, the chosen method aligned well with natural hand gestures and provided a smooth volume adjustment experience.
 
@@ -44,7 +42,7 @@ To resolve this, I devised a toggle mechanism based on the angle between thumb j
 - If the angle between landmarks 2 (thumb MCP), 3 (thumb IP), and 4 (thumb tip) was less than 180 degrees, the thumb was extended. With the thumb extended, the system would exclusively recognize the pinch gesture for volume control.
 - If the angle was greater than 180 degrees, the thumb was bent. With the thumb bent, the system would exclusively recognize the finger-raising gestures for media controls.
 
-https://lh7-rt.googleusercontent.com/docsz/AD_4nXfTUH_jz1p_h0xDHZRqWVjgQ1deRP5wlivPgZwfW4itdPHCyzeAeOGdylhaRe2k-Cs-uEnjNXYm4MEByj6U83mlcDOKZvPAciHDjXJmBrxqIZ9fBECRUHO2oAUnOFaoN4FHXU1D?key=hNQASpI_PLOQ7nTy6e7mk5D0
+<img src="images/figure3.png">
 
 This toggle system, while a compromise of the original plan, ensured intuitive transitions between the two gesture types.
 
